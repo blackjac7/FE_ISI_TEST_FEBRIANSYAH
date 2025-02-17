@@ -1,20 +1,23 @@
 'use client';
 
 import { logoutUser } from '@/actions/auth';
+import { useTransition } from 'react';
 
-const SignoutButton = () => {
-  const handleLogout = async () => {
-    await logoutUser();
+export default function SignoutButton() {
+  const [isPending, startTransition] = useTransition();
+
+  const handleSignout = () => {
+    startTransition(() => {
+      logoutUser();
+    });
   };
 
   return (
     <button
-      onClick={handleLogout}
-      className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
+      onClick={handleSignout}
+      className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded transition-colors"
     >
-      Logout
+      Sign Out
     </button>
   );
-};
-
-export default SignoutButton;
+}

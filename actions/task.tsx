@@ -11,6 +11,7 @@ import { requireLeadRole } from '@/utils/authRole';
 const createTaskSchema = z.object({
   title: z.string().min(1, { message: 'Title wajib diisi' }),
   description: z.string().optional(),
+  assignedTo: z.string().optional(),
 });
 
 export const createTask = async (formData: FormData) => {
@@ -24,6 +25,7 @@ export const createTask = async (formData: FormData) => {
   const data = createTaskSchema.parse({
     title: formData.get('title'),
     description: formData.get('description') || '',
+    assignedTo: formData.get('assignedTo') || null,
   });
 
   // Insert task baru, status default 'Not Started'
@@ -33,17 +35,53 @@ export const createTask = async (formData: FormData) => {
       title: data.title,
       description: data.description,
       created_by: userRecord.id,
+      assigned_to: data.assignedTo,
       status: 'Not Started',
     })
     .returning();
-
+  console.log('New task:', newTask);
   redirect('/dashboard');
+};
+
+export const getTasks = async () => {
+  const currentUser = await getCurrentUser();
+  if (!currentUser) {
+    throw new Error('Unauthorized: User tidak login');
+  }
+
+  const userRecord = await db.query.users.findFirst({
+    where: (users, { eq }) => eq(users.id, currentUser.id),
+  });
+  if (!userRecord) throw new Error('User tidak ditemukan');
+
+  const userRole = await db.query.roles.findFirst({
+    where: (roles, { eq }) => eq(roles.id, userRecord.role_id),
+  });
+  if (!userRole) throw new Error('Role tidak ditemukan');
+  let tasks = [];
+  try {
+    if (userRole.name === 'Lead') {
+      tasks = await db.query.tasks.findMany({
+        where: (tasks, { eq }) => eq(tasks.created_by, currentUser.id),
+      });
+    } else {
+      tasks = await db.query.tasks.findMany({
+        where: (tasks, { eq }) => eq(tasks.assigned_to, currentUser.id),
+      });
+    }
+  } catch (error) {
+    console.error('Error fetching tasks:', error);
+    return [];
+  }
+
+  return tasks ?? [];
 };
 
 const updateTaskSchema = z.object({
   taskId: z.string().nonempty({ message: 'Task ID wajib diisi' }),
   title: z.string().min(1, { message: 'Title wajib diisi' }),
   description: z.string().optional(),
+  assignedTo: z.string().optional(),
 });
 
 export const updateTask = async (formData: FormData) => {
@@ -57,6 +95,7 @@ export const updateTask = async (formData: FormData) => {
     taskId: formData.get('taskId'),
     title: formData.get('title'),
     description: formData.get('description') || '',
+    assignedTo: formData.get('assignedTo') || null,
   });
 
   await db
@@ -65,6 +104,7 @@ export const updateTask = async (formData: FormData) => {
       title: data.title,
       description: data.description,
       updated_at: new Date(),
+      assigned_to: data.assignedTo,
     })
     .where(eq(tasks.id, data.taskId));
 
@@ -140,3 +180,29 @@ export const deleteTask = async (formData: FormData) => {
 
   redirect('/dashboard');
 };
+
+export const getTeamMembers = async () => {
+  const teamRole = await db.query.roles.findFirst({
+    where: (roles, { eq }) => eq(roles.name, 'Team'),
+  });
+
+  if (!teamRole) return [];
+
+  const teamMembers = await db.query.users.findMany({
+    where: (users, { eq }) => eq(users.role_id, teamRole.id),
+    columns: { id: true, name: true },
+  });
+
+  return teamMembers;
+};
+
+export async function getUserNameById(userId: string | null) {
+  if (!userId) return null;
+
+  const user = await db.query.users.findFirst({
+    where: eq(users.id, userId),
+    columns: { name: true },
+  });
+
+  return user?.name ?? null;
+}

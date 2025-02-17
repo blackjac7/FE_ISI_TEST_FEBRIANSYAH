@@ -27,8 +27,6 @@ const SignupForm = () => {
       action={formAction}
       className="bg-white border border-gray-300 shadow-lg rounded-lg p-6 w-full max-w-md mx-auto"
     >
-      <h3 className="text-2xl font-semibold mb-4 text-center">Sign Up</h3>
-
       {/* Name Field */}
       <div className="mb-3">
         <label className="block text-sm font-medium text-gray-700">Name</label>
@@ -103,10 +101,10 @@ const SignupForm = () => {
         )}
       </div>
 
-      {/* Submit Button */}
-      <SubmitButton label="Sign Up" />
+      <div className="text-center">
+        <SubmitButton label="Sign Up" />
+      </div>
 
-      {/* Global Error Message */}
       {formState.message && (
         <p className="text-red-500 text-sm mt-2">{formState.message}</p>
       )}
