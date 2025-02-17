@@ -1,4 +1,5 @@
 'use server';
+
 import { cookies } from 'next/headers';
 import { signin, signup } from '@/utils/authToken';
 import { z } from 'zod';
@@ -18,12 +19,10 @@ const authSchemaRegister = z.object({
 
 const authSchemaSignin = z.object({
   email: z.string().email({ message: 'Invalid email format' }),
-  password: z
-    .string()
-    .min(6, { message: 'Password must be at least 6 characters long' }),
+  password: z.string(),
 });
 
-export const registerUser = async (prevState: any, formData: FormData) => {
+export const registerUser = async (prevState: unknown, formData: FormData) => {
   const values = {
     name: formData.get('name') || '',
     email: formData.get('email') || '',
@@ -43,7 +42,7 @@ export const registerUser = async (prevState: any, formData: FormData) => {
         values,
       };
     }
-    if (e.message) {
+    if (e instanceof Error && e.message) {
       return {
         message: e.message,
         values,
@@ -57,11 +56,13 @@ export const registerUser = async (prevState: any, formData: FormData) => {
 };
 
 export const signinUser = async (prevState: unknown, formData: FormData) => {
+  const values = {
+    email: formData.get('email') || '',
+    password: formData.get('password') || '',
+  };
+
   try {
-    const data = authSchemaSignin.parse({
-      email: formData.get('email'),
-      password: formData.get('password'),
-    });
+    const data = authSchemaSignin.parse(values);
 
     const { token } = await signin(data);
     (await cookies()).set(COOKIE_NAME, token);
@@ -70,7 +71,14 @@ export const signinUser = async (prevState: unknown, formData: FormData) => {
     if (e instanceof z.ZodError) {
       return { errors: e.errors };
     }
-    return { message: 'Failed to sign you in' };
+    if (e instanceof Error && e.message) {
+      return {
+        message: e.message,
+        values,
+      };
+    } else {
+      return { message: 'Failed to signin user', values };
+    }
   }
 
   redirect('/dashboard');

@@ -1,0 +1,67 @@
+import Link from 'next/link';
+import { getUserNameById } from '@/actions/task';
+
+interface Task {
+  id: string;
+  title: string;
+  description?: string;
+  status: 'Not Started' | 'On Progress' | 'Done' | 'Reject';
+  created_by: { id: string; name: string };
+  assigned_to?: string | null; // Sekarang ini ID, kita perlu konversi ke nama
+  created_at: string;
+  updated_at: string;
+  userRole: string | null;
+}
+
+interface TaskCardProps {
+  task: Task;
+}
+
+const statusColors = {
+  'Not Started': 'bg-gray-200 text-gray-800',
+  'On Progress': 'bg-yellow-200 text-yellow-800',
+  Done: 'bg-green-200 text-green-800',
+  Reject: 'bg-red-200 text-red-800',
+};
+
+export default async function TaskCard({ task }: TaskCardProps) {
+  const assignedName = task.assigned_to
+    ? await getUserNameById(task.assigned_to)
+    : 'Not Assigned';
+
+  return (
+    <div className="bg-white shadow rounded p-4 hover:shadow-lg transition">
+      <h2 className="text-xl font-semibold mb-2">{task.title}</h2>
+      <p className="text-gray-700">{task.description}</p>
+
+      <div className="mt-4 flex flex-col space-y-2 text-sm text-gray-600">
+        {task.userRole === 'Lead' && (
+          <p>
+            <span className="font-semibold">Assigned To:</span> {assignedName}
+          </p>
+        )}
+
+        {task.userRole === 'Team' && (
+          <p>
+            <span className="font-semibold">Created By:</span>{' '}
+            {task.created_by.name}
+          </p>
+        )}
+      </div>
+
+      <div className="mt-4 flex justify-between items-center">
+        <span
+          className={`px-2 py-1 rounded text-sm ${statusColors[task.status]}`}
+        >
+          {task.status}
+        </span>
+        <Link
+          href={`/task/${task.id}`}
+          className="text-blue-500 hover:underline text-sm"
+        >
+          Detail
+        </Link>
+      </div>
+    </div>
+  );
+}
