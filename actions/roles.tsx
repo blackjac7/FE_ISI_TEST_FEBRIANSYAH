@@ -2,8 +2,8 @@
 
 import { db } from '@/db/db';
 import { tasks, users, roles } from '@/db/schema';
+import { requireLeadRole } from '@/utils/authRole';
 import { eq } from 'drizzle-orm';
-import { getCurrentUser } from '@/utils/users';
 
 export const getRoles = async () => {
   return await db.select().from(roles);
@@ -13,23 +13,17 @@ export const assignTaskToTeam = async (formData: FormData) => {
   const taskId = formData.get('taskId') as string;
   const teamMemberId = formData.get('teamMemberId') as string;
 
-  const currentUser = await getCurrentUser();
-  if (!currentUser) {
-    throw new Error('Unauthorized: User tidak ditemukan');
+  const userRecord = await requireLeadRole();
+
+  const task = await db.query.tasks.findFirst({
+    where: eq(tasks.id, taskId),
+  });
+  if (!task) {
+    throw new Error('Task tidak ditemukan');
   }
 
-  const userDetail = await db.query.users.findFirst({
-    where: eq(users.id, currentUser.id),
-  });
-  if (!userDetail) {
-    throw new Error('User tidak ditemukan dalam database');
-  }
-
-  const userRole = await db.query.roles.findFirst({
-    where: eq(roles.id, userDetail.role_id),
-  });
-  if (!userRole || userRole.name !== 'Lead') {
-    throw new Error('Unauthorized: Hanya Lead yang dapat meng-assign task');
+  if (task.created_by === userRecord.id) {
+    throw new Error('Tidak dapat assign task yang dibuat sendiri');
   }
 
   const teamMember = await db.query.users.findFirst({
