@@ -1,4 +1,3 @@
-// app/components/NavbarClient.tsx
 'use client';
 
 import Link from 'next/link';
@@ -11,7 +10,6 @@ interface NavbarClientProps {
 }
 
 export default function NavbarClient({ user, isLead }: NavbarClientProps) {
-  console.log(isLead);
   const [isOpen, setIsOpen] = useState(false);
   const toggleMenu = () => setIsOpen((prev) => !prev);
 
@@ -19,7 +17,6 @@ export default function NavbarClient({ user, isLead }: NavbarClientProps) {
     <nav className="bg-white shadow-md sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
-          {/* Logo */}
           <div className="flex-shrink-0 flex items-center">
             <Link href="/">
               <span className="text-2xl font-bold text-gray-800">
@@ -134,7 +131,7 @@ export default function NavbarClient({ user, isLead }: NavbarClientProps) {
                   <>
                     <Link
                       href="/task/new"
-                      className="text-gray-700 hover:text-gray-900 transition-colors flex items-center"
+                      className="block text-gray-700 hover:text-gray-900 transition-colors text-center"
                     >
                       Buat Task
                     </Link>

@@ -1,7 +1,12 @@
 import SigninForm from '@/components/SigninForm';
 import Image from 'next/image';
+import { getCurrentUser } from '@/utils/users';
+import { redirect } from 'next/navigation';
 
 export default async function SigninPage() {
+  const user = await getCurrentUser();
+
+  if (user) redirect('/dashboard');
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-r from-green-400 via-blue-500 to-purple-500 p-4 sm:p-8">
       <Image

@@ -23,6 +23,7 @@ const SignupForm = () => {
   useEffect(() => {
     const fetchRoles = async () => {
       const data = await getRoles();
+      console.log(data);
       setRoles(data);
     };
     fetchRoles();
@@ -32,7 +33,7 @@ const SignupForm = () => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
     const result = await registerUser(formState, formData);
-    console.log('result', result);
+
     if (result) {
       setFormState({
         message: result.message || null,

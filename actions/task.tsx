@@ -11,7 +11,7 @@ import { requireLeadRole } from '@/utils/authRole';
 const createTaskSchema = z.object({
   title: z.string().min(1, { message: 'Title wajib diisi' }),
   description: z.string().optional(),
-  assignedTo: z.string().optional(),
+  assignedTo: z.string().optional().nullable(),
 });
 
 export const createTask = async (formData: FormData) => {

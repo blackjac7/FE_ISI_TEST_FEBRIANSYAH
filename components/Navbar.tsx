@@ -1,26 +1,21 @@
 import { getCurrentUser } from '@/utils/users';
 import NavbarClient from './NavbarClient';
 import { db } from '@/db/db';
-import { users, roles } from '@/db/schema';
+import { roles } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 
 export default async function Navbar() {
-  interface User {
+  const user = (await getCurrentUser()) as {
     id: string;
-  }
-
-  const user: User | null = await getCurrentUser();
+    created_at: Date;
+    email: string;
+    name: string;
+    role_id: string;
+  };
 
   if (user) {
-    const userRecord = await db.query.users.findFirst({
-      where: eq(users.id, user.id),
-    });
-    if (!userRecord) {
-      throw new Error('User tidak ditemukan');
-    }
-
     const userRole = await db.query.roles.findFirst({
-      where: eq(roles.id, userRecord.role_id),
+      where: eq(roles.id, user.role_id),
     });
     if (!userRole || userRole.name !== 'Lead') {
       return <NavbarClient user={user} isLead={false} />;

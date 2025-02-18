@@ -25,6 +25,7 @@ export const getUserFromToken = async (token: {
       email: true,
       name: true,
       created_at: true,
+      role_id: true,
     },
   });
 
@@ -42,11 +43,11 @@ export const signin = async ({
     where: eq(users.email, email),
   });
 
-  if (!match) throw { message: 'Invalid user' };
+  if (!match) throw new Error('User not found');
 
   const correctPW = await comparePW(password, match.password);
   if (!correctPW) {
-    throw { message: 'Invalid password' };
+    throw new Error('Invalid password');
   }
 
   const token = createTokenForUser(match.id);

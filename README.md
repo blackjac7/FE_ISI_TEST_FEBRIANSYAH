@@ -6,7 +6,7 @@ Aplikasi Todo List berbasis web yang mengimplementasikan fitur autentikasi, mana
 
 - **Next.js & TypeScript**: Struktur aplikasi menggunakan App Router dengan TypeScript.
 - **Tailwind CSS**: Tampilan yang responsif dan mobile-first.
-- **PostgreSQL**: Database menggunakan PostgreSQL dengan query native (tanpa ORM).
+- **PostgreSQL**: Database menggunakan PostgreSQL dengan query native melalui Drizzle ORM.
 - **Autentikasi & Otorisasi**: Sistem login menggunakan JWT dan proteksi route berbasis role (Lead & Team).
 - **CRUD Task**: Fitur pembuatan, update, delete, dan update status task.
 - **Docker Compose**: Konfigurasi Docker untuk menjalankan aplikasi dan PostgreSQL secara bersamaan.
@@ -14,7 +14,7 @@ Aplikasi Todo List berbasis web yang mengimplementasikan fitur autentikasi, mana
 
 ## Prasyarat
 
-- [Node.js](https://nodejs.org/) v14+
+- [Node.js](https://nodejs.org/) v21+
 - [PostgreSQL](https://www.postgresql.org/) (jika menjalankan secara manual)
 - [Docker & Docker Compose](https://docs.docker.com/compose/) (opsional, untuk deployment dengan container)
 
@@ -29,6 +29,7 @@ Di dalam file `package.json`, terdapat beberapa script penting:
 - **`npm run db:push`**: Menjalankan migrasi database menggunakan `drizzle-kit push`.
 - **`npm run db:studio`**: Membuka studio database untuk visualisasi menggunakan `drizzle-kit studio`.
 - **`npm run db:seed`**: Menjalankan seeding data dengan menjalankan file `./db/seed.ts`.
+- **`npm run db:create`**: Membuat database baru `./db/createDB.ts`.
 
 ## Instalasi Development Manual
 
@@ -51,22 +52,20 @@ Di dalam file `package.json`, terdapat beberapa script penting:
 
    ```dotenv
    NODE_ENV=development
-   DATABASE_URL=postgres://postgres:yourpassword@localhost:5432/yourdbname
+   DATABASE_URL_CREATE=postgres://username:yourpassword@localhost:5432
+   DATABASE_URL=postgres://username:yourpassword@localhost:5432/yourdbname
    JWT_SECRET=your_jwt_secret
    ```
 
-4. **Setup Database:**
-
-   Pastikan PostgreSQL sudah terinstall dan berjalan, lalu buat database sesuai dengan `DATABASE_URL`.
-
-5. **Jalankan migrasi dan seeding:**
+4. **Jalankan migrasi dan seeding:**
 
    ```bash
+   npm run db:create
    npm run db:push
    npm run db:seed
    ```
 
-6. **Jalankan Aplikasi:**
+5. **Jalankan Aplikasi:**
 
    ```bash
    npm run dev

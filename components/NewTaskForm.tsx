@@ -1,4 +1,3 @@
-// app/components/NewTaskForm.tsx (Client Component)
 'use client';
 
 import { createTask } from '@/actions/task';
