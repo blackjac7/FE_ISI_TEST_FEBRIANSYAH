@@ -1,21 +1,32 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
-import { useActionState } from 'react';
+import { useState } from 'react';
 import { signinUser } from '@/actions/auth';
 import Link from 'next/link';
 import SubmitButton from './SubmitButton';
 
-const initState = { message: null, errors: null };
-
 const SigninForm = () => {
-  const [formState, actionForm] = useActionState<{
+  const [formState, setFormState] = useState<{
     message: string | null;
     errors: any;
-  }>(signinUser, initState);
+  }>({ message: null, errors: null });
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    const result = await signinUser(formState, formData);
+    if (result) {
+      setFormState({
+        message: result.message || null,
+        errors: result.errors || null,
+      });
+    }
+  };
 
   return (
     <form
-      action={actionForm}
+      onSubmit={handleSubmit}
       className="bg-white border border-gray-300 shadow-lg rounded-lg p-6 w-full max-w-md mx-auto sm:max-w-lg md:max-w-xl lg:max-w-2xl"
     >
       <div className="mb-3">

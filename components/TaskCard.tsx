@@ -4,13 +4,13 @@ import { getUserNameById } from '@/actions/task';
 interface Task {
   id: string;
   title: string;
-  description?: string;
+  description?: string | null;
   status: 'Not Started' | 'On Progress' | 'Done' | 'Reject';
   created_by: { id: string; name: string };
-  assigned_to?: string | null; // Sekarang ini ID, kita perlu konversi ke nama
-  created_at: string;
-  updated_at: string;
-  userRole: string | null;
+  assigned_to?: string | null;
+  created_at: Date | null;
+  updated_at: Date | null;
+  userRole?: string | null;
 }
 
 interface TaskCardProps {

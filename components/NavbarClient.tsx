@@ -6,12 +6,13 @@ import { useState } from 'react';
 import SignoutButton from './SignoutButton';
 
 interface NavbarClientProps {
-  user: string | null;
+  user: object | null;
+  isLead: boolean;
 }
 
-export default function NavbarClient({ user }: NavbarClientProps) {
+export default function NavbarClient({ user, isLead }: NavbarClientProps) {
+  console.log(isLead);
   const [isOpen, setIsOpen] = useState(false);
-
   const toggleMenu = () => setIsOpen((prev) => !prev);
 
   return (
@@ -37,12 +38,17 @@ export default function NavbarClient({ user }: NavbarClientProps) {
                   >
                     Dashboard
                   </Link>
-                  <Link
-                    href="/task/new"
-                    className="text-gray-700 hover:text-gray-900 transition-colors flex items-center"
-                  >
-                    Buat Task
-                  </Link>
+                  {isLead ? (
+                    <>
+                      <Link
+                        href="/task/new"
+                        className="text-gray-700 hover:text-gray-900 transition-colors flex items-center"
+                      >
+                        Buat Task
+                      </Link>
+                    </>
+                  ) : null}
+
                   <SignoutButton />
                 </>
               ) : (
@@ -124,14 +130,17 @@ export default function NavbarClient({ user }: NavbarClientProps) {
                 >
                   Dashboard
                 </Link>
-                <Link
-                  href="/task/new"
-                  onClick={() => setIsOpen(false)}
-                  className="block text-gray-700 hover:text-gray-900 transition-colors text-center"
-                >
-                  Buat Task
-                </Link>
-                <div onClick={() => setIsOpen(false)}>
+                {isLead ? (
+                  <>
+                    <Link
+                      href="/task/new"
+                      className="text-gray-700 hover:text-gray-900 transition-colors flex items-center"
+                    >
+                      Buat Task
+                    </Link>
+                  </>
+                ) : null}
+                <div onClick={() => setIsOpen(false)} className="text-center">
                   <SignoutButton />
                 </div>
               </>

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import jwt from 'jsonwebtoken';
 import { db } from '@/db/db';
 import { eq } from 'drizzle-orm';
@@ -22,6 +23,7 @@ export const getUserFromToken = async (token: {
     columns: {
       id: true,
       email: true,
+      name: true,
       created_at: true,
     },
   });
@@ -67,9 +69,7 @@ export const signup = async ({
   const match = await db.query.users.findFirst({
     where: eq(users.email, email),
   });
-
   if (match) throw { message: 'email already exists' };
-
   const hashedPW = await hashPW(password);
   const rows = await db
     .insert(users)
@@ -80,7 +80,6 @@ export const signup = async ({
       createdAt: users.created_at,
     });
 
-  console.log('authtoken', rows[0]);
   const user = rows[0];
   const token = createTokenForUser(user.id);
 

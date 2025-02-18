@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use server';
 
 import { cookies } from 'next/headers';
@@ -47,6 +48,11 @@ export const registerUser = async (prevState: unknown, formData: FormData) => {
         message: e.message,
         values,
       };
+    } else if (typeof e === 'object' && e !== null && 'message' in e) {
+      return {
+        message: (e as { message: string }).message,
+        values,
+      };
     } else {
       return { message: 'Failed to register user', values };
     }
@@ -55,7 +61,10 @@ export const registerUser = async (prevState: unknown, formData: FormData) => {
   redirect('/dashboard');
 };
 
-export const signinUser = async (prevState: unknown, formData: FormData) => {
+export const signinUser = async (
+  prevState: { message: string | null; errors: any },
+  formData: FormData
+) => {
   const values = {
     email: formData.get('email') || '',
     password: formData.get('password') || '',
@@ -69,15 +78,16 @@ export const signinUser = async (prevState: unknown, formData: FormData) => {
   } catch (e) {
     console.error(e);
     if (e instanceof z.ZodError) {
-      return { errors: e.errors };
+      return { errors: e.errors, message: null };
     }
     if (e instanceof Error && e.message) {
       return {
         message: e.message,
+        errors: null,
         values,
       };
     } else {
-      return { message: 'Failed to signin user', values };
+      return { message: 'Failed to signin user', errors: null, values };
     }
   }
 

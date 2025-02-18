@@ -4,7 +4,7 @@ import { logoutUser } from '@/actions/auth';
 import { useTransition } from 'react';
 
 export default function SignoutButton() {
-  const [isPending, startTransition] = useTransition();
+  const [, startTransition] = useTransition();
 
   const handleSignout = () => {
     startTransition(() => {
@@ -15,7 +15,7 @@ export default function SignoutButton() {
   return (
     <button
       onClick={handleSignout}
-      className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded transition-colors"
+      className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded transition-colors "
     >
       Sign Out
     </button>

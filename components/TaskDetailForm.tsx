@@ -12,12 +12,12 @@ import {
 interface Task {
   id: string;
   title: string;
-  description?: string;
+  description?: string | null;
   status: 'Not Started' | 'On Progress' | 'Done' | 'Reject';
   created_by: string;
-  assigned_to?: string | null; // ID user
-  created_at: string;
-  updated_at: string;
+  assigned_to?: string | null;
+  created_at: Date | null;
+  updated_at: Date | null;
 }
 
 interface TaskDetailFormProps {
@@ -89,14 +89,22 @@ export default function TaskDetailForm({
 
   return (
     <div className="bg-white p-6 rounded shadow max-w-2xl mx-auto">
-      <h1 className="text-2xl font-bold mb-4">Detail Task</h1>
+      <div className="flex justify-between items-center mb-4">
+        <h1 className="text-2xl font-bold">Detail Task</h1>
+        <button
+          onClick={() => (window.location.href = '/dashboard')}
+          className="text-red-500 hover:text-red-700 text-4xl"
+        >
+          &times;
+        </button>
+      </div>
       <div className="mb-6">
         <p className="mb-2">
           <span className="font-semibold">Status:</span> {task.status}
         </p>
         <p className="mb-2">
           <span className="font-semibold">Created At:</span>{' '}
-          {new Date(task.created_at).toLocaleString()}
+          {task.created_at ? new Date(task.created_at).toLocaleString() : 'N/A'}
         </p>
         {userRole === 'Lead' && task.assigned_to && (
           <p className="mb-2">
@@ -156,19 +164,21 @@ export default function TaskDetailForm({
                 ))}
               </select>
             </div>
-            <button
-              type="submit"
-              className="bg-blue-500 text-white px-4 py-2 rounded"
-            >
-              Update Task
-            </button>
+            <div className="space-x-4">
+              <button
+                type="submit"
+                className="bg-blue-500 text-white px-4 py-2 rounded"
+              >
+                Update Task
+              </button>
+              <button
+                onClick={handleDelete}
+                className="mt-4 bg-red-500 text-white px-4 py-2 rounded"
+              >
+                Delete Task
+              </button>
+            </div>
           </form>
-          <button
-            onClick={handleDelete}
-            className="mt-4 bg-red-500 text-white px-4 py-2 rounded"
-          >
-            Delete Task
-          </button>
         </>
       ) : (
         <>

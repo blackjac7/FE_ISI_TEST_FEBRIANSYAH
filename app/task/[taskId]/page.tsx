@@ -7,7 +7,7 @@ import TaskDetailForm from '@/components/TaskDetailForm';
 import { getCurrentUser } from '@/utils/users';
 
 interface TaskDetailPageProps {
-  params: Promise<{ taskId?: string }> | { taskId?: string };
+  params: Promise<{ taskId?: string }>;
 }
 
 export default async function TaskDetailPage({ params }: TaskDetailPageProps) {
@@ -25,7 +25,7 @@ export default async function TaskDetailPage({ params }: TaskDetailPageProps) {
   }
 
   const currentUser = await getCurrentUser();
-  let userRole = null;
+  let userRole: string | null = null;
 
   if (currentUser) {
     const userRecord = await db.query.users.findFirst({
@@ -37,7 +37,7 @@ export default async function TaskDetailPage({ params }: TaskDetailPageProps) {
         where: eq(roles.id, userRecord.role_id),
       });
 
-      userRole = roleRecord?.name;
+      userRole = roleRecord?.name ?? null;
     }
   }
 

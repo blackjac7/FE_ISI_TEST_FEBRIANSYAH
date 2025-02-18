@@ -1,17 +1,23 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
-import { useActionState } from 'react';
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 import { registerUser } from '@/actions/auth';
 import { getRoles } from '@/actions/roles';
 import SubmitButton from './SubmitButton';
 import Link from 'next/link';
 
 const SignupForm = () => {
-  const [formState, formAction] = useActionState(registerUser, {
-    message: null,
-    errors: {},
-  });
+  const [formState, setFormState] = useState<{
+    message: string | null;
+    errors: any;
+    values?: {
+      name?: string;
+      email?: string;
+      password?: string;
+      role_id?: string;
+    };
+  }>({ message: null, errors: {} });
   const [roles, setRoles] = useState<{ id: string; name: string }[]>([]);
 
   useEffect(() => {
@@ -22,9 +28,28 @@ const SignupForm = () => {
     fetchRoles();
   }, []);
 
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    const result = await registerUser(formState, formData);
+    console.log('result', result);
+    if (result) {
+      setFormState({
+        message: result.message || null,
+        errors: result.errors || {},
+        values: {
+          name: formData.get('name') as string,
+          email: formData.get('email') as string,
+          password: formData.get('password') as string,
+          role_id: formData.get('role_id') as string,
+        },
+      });
+    }
+  };
+
   return (
     <form
-      action={formAction}
+      onSubmit={handleSubmit}
       className="bg-white border border-gray-300 shadow-lg rounded-lg p-6 w-full max-w-md mx-auto"
     >
       {/* Name Field */}
@@ -35,7 +60,7 @@ const SignupForm = () => {
           name="name"
           type="text"
           placeholder="Enter your name"
-          defaultValue={formState?.values?.name as string}
+          defaultValue={formState?.values?.name}
         />
         {formState.errors?.name?._errors && (
           <p className="text-red-500 text-sm mt-1">
@@ -52,7 +77,7 @@ const SignupForm = () => {
           name="email"
           type="email"
           placeholder="Enter your email"
-          defaultValue={formState?.values?.email as string}
+          defaultValue={formState?.values?.email}
         />
         {formState.errors?.email?._errors && (
           <p className="text-red-500 text-sm mt-1">
@@ -71,7 +96,7 @@ const SignupForm = () => {
           name="password"
           type="password"
           placeholder="Create a password"
-          defaultValue={formState?.values?.password as string}
+          defaultValue={formState?.values?.password}
         />
         {formState.errors?.password?._errors && (
           <p className="text-red-500 text-sm mt-1">
@@ -86,6 +111,7 @@ const SignupForm = () => {
         <select
           className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           name="role_id"
+          defaultValue={formState?.values?.role_id}
         >
           <option value="">Select a role</option>
           {roles.map((role) => (
