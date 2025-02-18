@@ -14,7 +14,7 @@ Aplikasi Todo List berbasis web yang mengimplementasikan fitur autentikasi, mana
 
 ## Prasyarat
 
-- [Node.js](https://nodejs.org/) v14+
+- [Node.js](https://nodejs.org/) v21+
 - [PostgreSQL](https://www.postgresql.org/) (jika menjalankan secara manual)
 - [Docker & Docker Compose](https://docs.docker.com/compose/) (opsional, untuk deployment dengan container)
 
