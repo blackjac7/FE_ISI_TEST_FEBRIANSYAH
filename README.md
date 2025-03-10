@@ -1,36 +1,138 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Fullstack Engineer Assessment Test
 
-## Getting Started
+Aplikasi Todo List berbasis web yang mengimplementasikan fitur autentikasi, manajemen role (Lead & Team), CRUD task, dan penugasan task. Aplikasi ini dibangun menggunakan Next.js (App Router) dengan TypeScript, Tailwind CSS, dan PostgreSQL (menggunakan query native melalui Drizzle ORM). Selain itu, aplikasi sudah terintegrasi dengan Docker Compose untuk memudahkan deployment ke produksi.
 
-First, run the development server:
+## Fitur Utama
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- **Next.js & TypeScript**: Struktur aplikasi menggunakan App Router dengan TypeScript.
+- **Tailwind CSS**: Tampilan yang responsif dan mobile-first.
+- **PostgreSQL**: Database menggunakan PostgreSQL dengan query native melalui Drizzle ORM.
+- **Autentikasi & Otorisasi**: Sistem login menggunakan JWT dan proteksi route berbasis role (Lead & Team).
+- **CRUD Task**: Fitur pembuatan, update, delete, dan update status task.
+- **Docker Compose**: Konfigurasi Docker untuk menjalankan aplikasi dan PostgreSQL secara bersamaan.
+- **Database Migration & Seeding**: Menggunakan `drizzle-kit` untuk migrasi dan seeding database.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Prasyarat
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- [Node.js](https://nodejs.org/) v21+
+- [PostgreSQL](https://www.postgresql.org/) (jika menjalankan secara manual)
+- [Docker & Docker Compose](https://docs.docker.com/compose/) (opsional, untuk deployment dengan container)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## ERD
 
-## Learn More
+![ERD](./public/erd.png)
 
-To learn more about Next.js, take a look at the following resources:
+## Scripts
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Di dalam file `package.json`, terdapat beberapa script penting:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- **`npm run dev`**: Menjalankan aplikasi dalam mode development.
+- **`npm run build`**: Membangun aplikasi untuk produksi.
+- **`npm run start`**: Menjalankan aplikasi dalam mode produksi.
+- **`npm run lint`**: Mengecek code style menggunakan ESLint.
+- **`npm run db:push`**: Menjalankan migrasi database menggunakan `drizzle-kit push`.
+- **`npm run db:studio`**: Membuka studio database untuk visualisasi menggunakan `drizzle-kit studio`.
+- **`npm run db:seed`**: Menjalankan seeding data dengan menjalankan file `./db/seed.ts`.
+- **`npm run db:create`**: Membuat database baru `./db/createDB.ts`.
 
-## Deploy on Vercel
+## Instalasi Development Manual
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1. **Clone Repository:**
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+   ```bash
+   git clone https://github.com/blackjac7/FE_ISI_TEST_FEBRIANSYAH.git
+   cd FE_ISI_TEST_FEBRIANSYAH
+   ```
+
+2. **Install Dependensi:**
+
+   ```bash
+   npm install
+   ```
+
+3. **Setup Environment:**
+
+   Buat file .env di root project dengan konfigurasi seperti berikut (sesuaikan nilainya):
+
+   ```dotenv
+   NODE_ENV=development
+   DATABASE_URL_CREATE=postgres://username:yourpassword@localhost:5432
+   DATABASE_URL=postgres://username:yourpassword@localhost:5432/yourdbname
+   JWT_SECRET=your_jwt_secret
+   ```
+
+4. **Jalankan migrasi dan seeding:**
+
+   ```bash
+   npm run db:create
+   npm run db:push
+   npm run db:seed
+   ```
+
+5. **Jalankan Aplikasi:**
+
+   ```bash
+   npm run dev
+   ```
+
+   Akses aplikasi di [http://localhost:3000](http://localhost:3000)
+
+## Instalasi Menggunakan Docker Compose
+
+1. **Clone Repository:**
+
+   ```bash
+   git clone https://github.com/blackjac7/FE_ISI_TEST_FEBRIANSYAH.git
+   cd FE_ISI_TEST_FEBRIANSYAH
+   ```
+
+2. **Setup Environment untuk Docker:**
+
+   Buat file .env.docker di root project dengan isi seperti berikut (sesuaikan nilainya):
+
+   ```dotenv
+   POSTGRES_USER=postgres
+   POSTGRES_PASSWORD=yourpassword
+   POSTGRES_DB=yourdbname
+   DATABASE_URL=postgres://postgres:yourpassword@db:5432/yourdbname
+   JWT_SECRET=your_jwt_secret
+   ```
+
+3. **Build dan Jalankan dengan Docker Compose:**
+
+   ```bash
+   docker-compose up --build -d
+   ```
+
+   Perintah ini akan:
+
+   - Membangun image untuk aplikasi, service migrasi, dan PostgreSQL.
+   - Menjalankan container untuk PostgreSQL (db), migrasi (migrate), dan aplikasi (app).
+   - Aplikasi akan berjalan di port 3000 di host.
+
+4. **Akses Aplikasi:**
+
+   Buka browser dan akses [http://localhost:3000](http://localhost:3000)
+
+5. **Melihat Log:**
+
+   Untuk melihat log container, gunakan:
+
+   ```bash
+   docker-compose logs -f app
+   docker-compose logs -f db
+   ```
+
+## Troubleshooting
+
+### Error pada Server Components:
+
+Pastikan semua variabel lingkungan sudah terkonfigurasi dengan benar dan database sudah terhubung.
+
+### Log Error:
+
+Gunakan `docker-compose logs -f app` untuk melihat error detail di container.
+
+### Migrasi Database:
+
+Jika terjadi masalah dengan migrasi, pastikan perintah `npm run db:push` dan `npm run db:seed` sudah berjalan dengan benar.

@@ -1,0 +1,45 @@
+services:
+  db:
+    image: postgres:15
+    restart: always
+    env_file:
+      - .env.docker
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - app-network
+
+  migrate:
+    build: .
+    command: sh -c "npm run db:push && npm run db:seed"
+    depends_on:
+      - db
+    env_file:
+      - .env.docker
+    environment:
+      - NODE_ENV=production
+    networks:
+      - app-network
+
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env.docker
+    environment:
+      - NODE_ENV=production
+    depends_on:
+      - db
+      - migrate
+    networks:
+      - app-network
+
+volumes:
+  pgdata:
+
+networks:
+  app-network:
+    driver: bridge
