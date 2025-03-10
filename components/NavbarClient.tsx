@@ -49,16 +49,10 @@ export default function NavbarClient({ user, isLead }: NavbarClientProps) {
               ) : (
                 <>
                   <Link
-                    href="/signin"
-                    className="text-gray-700 hover:text-gray-900 transition-colors"
+                    href="/login"
+                    className="text-gray-700 hover:text-gray-900 transition-colors "
                   >
-                    Sign In
-                  </Link>
-                  <Link
-                    href="/signup"
-                    className="text-gray-700 hover:text-gray-900 transition-colors"
-                  >
-                    Sign Up
+                    Login
                   </Link>
                 </>
               )}
@@ -142,18 +136,11 @@ export default function NavbarClient({ user, isLead }: NavbarClientProps) {
             ) : (
               <>
                 <Link
-                  href="/signin"
+                  href="/login"
                   onClick={() => setIsOpen(false)}
                   className="block text-gray-700 hover:text-gray-900 transition-colors text-center"
                 >
-                  Sign In
-                </Link>
-                <Link
-                  href="/signup"
-                  onClick={() => setIsOpen(false)}
-                  className="block text-gray-700 hover:text-gray-900 transition-colors text-center"
-                >
-                  Sign Up
+                  Login
                 </Link>
               </>
             )}

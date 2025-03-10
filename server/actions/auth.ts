@@ -96,5 +96,5 @@ export const signinUser = async (
 
 export const logoutUser = async () => {
   (await cookies()).delete(COOKIE_NAME);
-  redirect("/signin");
+  redirect("/login");
 };
